@@ -23,7 +23,7 @@ class OwnersController extends Controller
         $this->middleware('auth:admin');
     }
 
-    public function index()
+    public function index() //表示
     {
         // $date_now = Carbon::now();
         // $date_parse = Carbon::parse(now());
@@ -45,7 +45,7 @@ class OwnersController extends Controller
         $owners = Owner::select('id', 'name', 'email', 'created_at')
         ->paginate(3);
         return view('admin.owners.index',
-        compact('owners'));
+        compact('owners')); //viewに渡す
     }
 
     /**
@@ -53,7 +53,7 @@ class OwnersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create() //新規作成
     {
         return view('admin.owners.create');
     }
@@ -64,17 +64,18 @@ class OwnersController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request) //保存
     {
         // $repuest->name;
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:owners'],
             'password' => ['required', 'confirmed', 'min:8'],
+            //required = 必須項目　confirme = 確認する
         ]);
 
         try{
-            DB::transaction(function () use($request){
+            DB::transaction(function () use($request){  //transaction 取引 今回はowner作成時にshopも同時に自動作成
                 $owner = Owner::create([
                     'name' => $request->name,
                     'email' => $request->email,
@@ -91,7 +92,7 @@ class OwnersController extends Controller
             },2);
         }catch(Throwable $e){
             Log::error($e);
-            throw $e;
+            throw $e; //catch~はエラーが出た時にlogファイルに渡す定型文
         }
 
         return redirect()
@@ -105,7 +106,7 @@ class OwnersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id) //表示
     {
         //
     }
@@ -116,7 +117,7 @@ class OwnersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id) //編集
     {
         $owner = Owner::findOrFail($id);
         // dd($owner);
@@ -130,7 +131,7 @@ class OwnersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id) //更新
     {
         $owner = Owner::findOrFail($id);
         $owner->name = $request->name;
@@ -149,7 +150,7 @@ class OwnersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id) //削除
     {
 
        Owner::findOrFail($id)->delete(); //ソフトデリート
