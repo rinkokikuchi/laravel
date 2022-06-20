@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Image;
 use Illuminate\Support\Facades\Auth; //18行目のowner_id取得のため
+use App\Http\Requests\UploadImageRequest;
 
 
 class ImageController extends Controller
@@ -49,7 +50,7 @@ class ImageController extends Controller
      */
     public function create()
     {
-        //
+        return view('owner.images.create');
     }
 
     /**
@@ -58,9 +59,9 @@ class ImageController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UploadImageRequest $request)
     {
-        //
+        dd($request);
     }
 
     /**
