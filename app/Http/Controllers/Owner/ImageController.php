@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Image;
 use Illuminate\Support\Facades\Auth; //18行目のowner_id取得のため
 use App\Http\Requests\UploadImageRequest;
+use App\Services\ImageService;
 
 
 class ImageController extends Controller
@@ -22,10 +23,10 @@ class ImageController extends Controller
 
             $id = $request->route()->parameter('image');
             if(!is_null($id)){
-                $shopsOwnerId = Image::findOrFail($id)->owner->id;
+                $imagesOwnerId = Image::findOrFail($id)->owner->id;
                 $imageId = (int)$imagesOwnerId;
-                if($imageId !== Auth::id()){
-                    abort(404); //不正なエラーを防ぐ関数
+                if($imageId !== Auth::id()){ //同じでなかったら
+                    abort(404);              //不正なエラーを防ぐ関数
                 }
             }
             return $next($request);
@@ -35,9 +36,8 @@ class ImageController extends Controller
     public function index()
     {
         $images = Image::where('owner_id', Auth::id())
-        ->orderBy('updated_at', 'desc') //desc=update_atを降順
+        ->orderBy('updated_at', 'desc') //orderBy desc=update_atを降順
         ->paginate(20);
-
 
         return view('owner.images.index',
         compact('images'));
@@ -61,7 +61,21 @@ class ImageController extends Controller
      */
     public function store(UploadImageRequest $request)
     {
-        dd($request);
+        $imageFiles = $request->file('files'); //('files) = name属性 複数の画像を配列として送るため
+        if(!is_null($imageFiles)){
+            foreach($imageFiles as $imageFile){
+            $fileNameToStore = ImageService::upload($imageFile, 'products'); //第2引数はフォルダ名
+            Image::create([  //保存処理
+                'owner_id' => Auth::id(),
+                'filename' => $fileNameToStore
+            ]);
+            }
+        }
+
+        return redirect()
+        ->route('owner.images.index')
+        ->with(['messege' => '画像登録を実施しました',
+        'status' => 'info']);
     }
 
     /**
