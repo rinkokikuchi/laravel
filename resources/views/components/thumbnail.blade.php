@@ -6,8 +6,6 @@ if($type === 'products'){
     $path = 'storage/products/';
 }
 @endphp
-products
-
 
 <div>
     @if(empty($filename))
