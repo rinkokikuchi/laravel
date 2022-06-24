@@ -8,6 +8,8 @@ use App\Models\Image;
 use Illuminate\Support\Facades\Auth; //18行目のowner_id取得のため
 use App\Http\Requests\UploadImageRequest;
 use App\Services\ImageService;
+use Illuminate\Support\Facades\Storage;
+
 
 
 class ImageController extends Controller
@@ -118,6 +120,17 @@ class ImageController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $image = Image::findOrFail($id);
+        $filePath = 'public/products/'.$image->filename; //ストレージのありか＋ファイルネームを取得
+
+        if(Storage::exists($filePath)){ //ストレージにファイルパスがあれば
+            Storage::delete($filePath); //ファイルパスを削除
+        }
+
+        Image::findOrFail($id)->delete();
+        return redirect()
+        ->route('owner.images.index')
+        ->with(['message'=> '画像を削除しました。',
+         'status' => 'alert']);
     }
 }
