@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Shop;
 use App\Models\Image;
+use App\Models\Stock;
 use App\Models\SecondaryCategory;
 
 
@@ -26,5 +27,9 @@ class Product extends Model
     public function imageFirst()  //tableと一緒はNG 'image1'
     {
         return $this->belongsTo(Image::class,'image1','id');
+    }
+
+    public function stock(){
+        return $this->hasMany(Stock::class);
     }
 }
