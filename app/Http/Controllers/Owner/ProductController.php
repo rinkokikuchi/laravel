@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
-use App\Models\SecondaryCategory;
+use App\Models\PrimaryCategory;
 use App\Models\Owner;
+use App\Models\Shop;
+use App\Models\Image;
+
 
 class ProductController extends Controller
 {
@@ -56,7 +59,20 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $shops = Shop::where('owner_id',Auth::id())
+        ->select('id','name')
+        ->get();
+
+        $images = Image::where('owner_id', Auth::id())
+        ->select('id','title','filename')
+        ->orderBy('updated_at', 'desc')
+        ->get();
+
+        $categories = PrimaryCategory::with('secondary')
+        ->get();
+
+        return view('owner.products.create',
+        compact('shops', 'images', 'categories'));
     }
 
     /**
