@@ -10,7 +10,10 @@ use App\Models\PrimaryCategory;
 use App\Models\Owner;
 use App\Models\Shop;
 use App\Models\Image;
-
+use App\Models\Stock;
+use Illuminate\Support\Facades\DB; //QueryBuilder クエリビルダー
+use Throwable;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -40,13 +43,6 @@ class ProductController extends Controller
        // $products = Owner::findOrFail(Auth::id())->shop->product;
         $ownerInfo = Owner::with('shop.product.imageFirst')
         ->where('id',Auth::id())->get();
-
-       // dd($ownerInfo);
-    //    foreach($ownerInfo as $owner){
-    //     foreach($owner->shop->product as $product){
-    //         dd($product->imageFirst->filename);
-    //     }
-    //    }
 
         return view('owner.products.index',
         compact('ownerInfo'));
@@ -83,7 +79,53 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => ['required', 'string', 'max:50'],
+            'information' => ['required', 'string','max:1000'],
+            'price' => ['required', 'integer'],
+            'sort_order' => ['nullable', 'integer'],
+            'quantity' => ['required', 'integer'],
+            'shop_id' => ['required', 'exists:shops,id'], //exists = 存在しているか確認
+            'category' => ['required', 'exists:secondary_categories,id'],
+            'image1' => ['nullable' , 'exists:images,id'],
+            'image2' => ['nullable' , 'exists:images,id'],
+            'image3' => ['nullable' , 'exists:images,id'],
+            'image4' => ['nullable' , 'exists:images,id'],
+            'is_selling' => ['required']
+            //required = 必須項目　confirme = 確認する
+        ]);
+
+        try{
+            DB::transaction(function () use($request){  //transaction 取引 今回はowner作成時にshopも同時に自動作成
+                $product = Product::create([
+                    'name' => $request->name,
+                    'information' => $request->information,
+                    'price' => $request->price,
+                    'sort_order' => $request->sort_order,
+                    'shop_id' => $request->shop_id,
+                    'secondary_category_id' => $request->category, //table名で登録する name=category table=secondary_category
+                    'image1' => $request->image1,
+                    'image2' => $request->image2,
+                    'image3' => $request->image3,
+                    'image4' => $request->image4,
+                    'is_selling' => $request->is_selling
+                ]);
+
+                Stock::create([
+                    'product_id' => $product->id,
+                    'type' => 1,
+                    'quantity' => $request->quantity,
+                ]);
+            },2);
+        }catch(Throwable $e){
+            Log::error($e);
+            throw $e; //catch~はエラーが出た時にlogファイルに渡す定型文
+        }
+
+        return redirect()
+        ->route('owner.products.index')
+        ->with(['message' => '商品登録しました。',
+        'status' => 'info']);
     }
 
     /**
