@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth; //18行目のowner_id取得のため
 use App\Http\Requests\UploadImageRequest;
 use App\Services\ImageService;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Product;
 
 
 
@@ -123,6 +124,33 @@ class ImageController extends Controller
     {
         $image = Image::findOrFail($id);
         $filePath = 'public/products/'.$image->filename; //ストレージのありか＋ファイルネームを取得
+
+        $imageInProducts = Product::where('image1',$image->id)
+        ->orwhere('image2',$image->id)
+        ->orwhere('image3',$image->id)
+        ->orwhere('image4',$image->id)
+        ->get();
+
+        if($imageInProducts){ //$imageInProducts = コレクション型
+            $imageInProducts->each(function($product) use($image){
+                if($product->image1 === $image->id){
+                    $product->image1 = null;
+                    $product->save();
+                }
+                if($product->image2 === $image->id){
+                    $product->image2 = null;
+                    $product->save();
+                }
+                if($product->image3 === $image->id){
+                    $product->image3 = null;
+                    $product->save();
+                }
+                if($product->image4 === $image->id){
+                    $product->image4 = null;
+                    $product->save();
+                }
+            });
+        }
 
         if(Storage::exists($filePath)){ //ストレージにファイルパスがあれば
             Storage::delete($filePath); //ファイルパスを削除
