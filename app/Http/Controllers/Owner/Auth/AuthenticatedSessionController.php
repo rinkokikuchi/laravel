@@ -45,10 +45,10 @@ class AuthenticatedSessionController extends Controller
     {
         Auth::guard('owners')->logout();
 
-        $request->session()->invalidate();
+        $request->session()->invalidate(); //invalidate = 無効化
 
         $request->session()->regenerateToken();
 
-        return redirect('/owner');
+        return redirect('/owner/login');
     }
 }
