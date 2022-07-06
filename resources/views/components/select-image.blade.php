@@ -4,6 +4,8 @@
   if( $name === 'image3'){$modal = 'modal-3';}
   if( $name === 'image4'){$modal = 'modal-4';}
   if( $name === 'image5'){$modal = 'modal-5';}
+  $cImage = $currentImage ?? '';
+  $cId = $currentId ?? '';
 @endphp
 
 
@@ -28,7 +30,6 @@
                         data-modal="{{ $modal }}"
                         src="{{ asset('storage/products/' . $image->filename)}}" >
                       <div class="text-gray-700">{{ $image->title }}</div>
-
                     </div>
                 </div>
             @endforeach
@@ -42,9 +43,9 @@
   </div>
 
   <div class="flex justify-around items-center mb-4">
-    <a class="py-2 px-4 bg-gray-200"data-micromodal-trigger="{{ $modal }}" href='javascript:;'>ファイルを選択</a>
-    <div classs="w-1/4">
-      <img id="{{ $name }}_thumbnail" src=""> {{--$name=image1~image6など--}}
+    <a class="py-2 px-4 bg-gray-200" data-micromodal-trigger="{{ $modal }}" href='javascript:;'>ファイルを選択</a>
+    <div class="w-1/4">
+      <img id="{{ $name }}_thumbnail" @if($cImage) src="{{ asset('storage/products/'.$cImage) }}" @else src=""  @endif> {{--$name=image1~image6など--}}
     </div>
   </div>
-  <input id="{{ $name }}_hidden" type="hidden" name="{{ $name }}" value=""> {{--hidden=画面には表示しないがデータを受け渡す--}}
+  <input id="{{ $name }}_hidden" type="hidden" name="{{ $name }}" value="{{ $cId }}"> {{--hidden=画面には表示しないがデータを受け渡す--}}
