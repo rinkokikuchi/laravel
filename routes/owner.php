@@ -26,9 +26,9 @@ use App\Http\Controllers\Owner\ProductController;
 |
 */
 
-Route::get('/', function () {
-    return view('owner.welcome');
-});
+// Route::get('/', function () {
+//     return view('owner.welcome');
+// });
 
 Route::prefix('shop') //prefix グループ内の各ルートに特定のURLを作成できる
 ->middleware('auth:owners')
@@ -56,10 +56,10 @@ Route::get('/dashboard', function () {
 
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
-                ->name('register');
+    // Route::get('register', [RegisteredUserController::class, 'create'])
+    //             ->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    // Route::post('register', [RegisteredUserController::class, 'store']);
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
                 ->name('login');
