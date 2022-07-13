@@ -23,7 +23,7 @@
             @elseif(auth('owners')->user())
               @include('layouts.owner-navigation')
             @elseif(auth('users')->user())
-              @include('layouts.users-navigation')
+              @include('layouts.user-navigation')
             @endif
 
             <!-- Page Heading -->

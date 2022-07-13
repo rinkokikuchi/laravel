@@ -18,8 +18,8 @@
                         <div class="w-1/4 p-2 md:p-4">
                             <a href="{{ route('owner.products.edit' , ['product' => $product->id]) }}">
                                 <div class = "mx-auto border rounded-p-2 md:p-4">
-                                    <x-thumbnail filename="{{$product->imageFirst->filename ?? ''}}" type="products" /> {{--?? ''-= imageFirstがnullだったら空としてデータを渡す-}}
-                                   {{-- <div class="text-gray-700">{{ $product->name }}</div>  --}}
+                                    <x-thumbnail filename="{{$product->imageFirst->filename ?? ''}}" type="products" /> {{--?? ''-= imageFirstがnullだったら空としてデータを渡す--}}
+                                   <div class="text-gray-700">{{ $product->name }}</div>
                                 </div>
                             </a>
                             </div>
