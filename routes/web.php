@@ -33,6 +33,8 @@ Route::middleware('auth:users')->group(function(){
     ->middleware('auth:users')
     ->group(function(){
         Route::post('add',[CartController::class,'add'])->name('cart.add');
+        Route::get('/',[CartController::class,'index'])->name('cart.index');
+
     });
 
 });
