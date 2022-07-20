@@ -12,8 +12,8 @@
                     <div class="flex flex-wrap">
                         @foreach($products as $product)
                         <div class="w-1/4 p-2 md:p-4">
-                            <a href="">
-                            <div class = "mx-auto border rounded-p-2 md:p-4">
+                            <a href="{{ route('user.items.show' , ['item' => $product->id]) }}">
+                                <div class = "mx-auto border rounded-p-2 md:p-4">
                                 <x-thumbnail filename="{{$product->filename ?? ''}}" type="products" /> {{--?? ''-= imageFirstがnullだったら空としてデータを渡す--}}
                                 <div class="mt-4">
                                     <h3 class="text-gray-500 text-xs tracking-widest title-font mb-1">{{$product->category}}</h3>

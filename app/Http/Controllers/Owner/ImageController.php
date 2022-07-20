@@ -79,7 +79,6 @@ class ImageController extends Controller
         ->route('owner.images.index')
         ->with(['messege' => '画像登録を実施しました',
         'status' => 'info']);
-        dd($status);
     }
 
 
