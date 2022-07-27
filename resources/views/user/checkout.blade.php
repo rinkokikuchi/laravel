@@ -5,11 +5,11 @@
     const stripe = Stripe(publicKey)
 
 
-    window.onload = function(){
+    window.onload = function() {
         stripe.redirectToCheckout({
-            sessionId:'{{$session->id}}'
-        }).then(function(result){
-            window.location.href = '{{route('user.cart.cancel')}}'
+            sessionId: '{{ $session->id }}'
+        }).then(function(result) {
+            window.location.href = '{{ route('user.cart.cancel') }}'
         });
     }
 </script>

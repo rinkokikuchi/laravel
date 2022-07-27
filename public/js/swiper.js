@@ -13604,8 +13604,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var swiper_css_navigation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! swiper/css/navigation */ "./node_modules/swiper/modules/navigation/navigation.min.css");
 /* harmony import */ var swiper_css_pagination__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! swiper/css/pagination */ "./node_modules/swiper/modules/pagination/pagination.min.css");
 // import Swiper JS
- // import Swiper styles
-
  // core version + navigation, pagination modules:
 
  // import Swiper and modules styles
@@ -13614,7 +13612,7 @@ __webpack_require__.r(__webpack_exports__);
 
  // init Swiper:
 
-swiper__WEBPACK_IMPORTED_MODULE_0__["default"] = new swiper__WEBPACK_IMPORTED_MODULE_0__["default"]('.swiper', {
+var swiper = new swiper__WEBPACK_IMPORTED_MODULE_0__["default"]('.swiper', {
   // Optional parameters
   direction: 'vertical',
   loop: true,
