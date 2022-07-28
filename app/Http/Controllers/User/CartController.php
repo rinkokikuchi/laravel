@@ -8,6 +8,7 @@ use App\Models\Cart;
 use App\Models\User;
 use App\Models\Stock;
 use Illuminate\Support\Facades\Auth;
+use App\Services\CartService;
 
 class CartController extends Controller
 {
@@ -18,40 +19,41 @@ class CartController extends Controller
         $products = $user->products;
         $totalPrice = 0;
 
-        foreach($products as $product){
+        foreach ($products as $product) {
             $totalPrice += $product->price * $product->pivot->quantity;
         }
 
 
-        return view('user.cart',
-        compact('products', 'totalPrice'));
+        return view(
+            'user.cart.index',
+            compact('products', 'totalPrice')
+        );
     }
 
 
     public function add(Request $request)
     {
-        $itemInCart = Cart::where('product_id',$request->product_id) //cartクラスの中で探す($request->product_idを'product_id'と認識する)
-        ->where('user_id',Auth::id())->first();
+        $itemInCart = Cart::where('product_id', $request->product_id) //cartクラスの中で探す($request->product_idを'product_id'と認識する)
+            ->where('user_id', Auth::id())->first();
 
-        if($itemInCart)
-        {
+        if ($itemInCart) {
             $itemInCart->quantity += $request->quantity;
             $itemInCart->save();
-        }else{
+        } else {
             Cart::create([
-            'user_id' => Auth::id(),
-            'product_id' => $request->product_id,
-            'quantity' => $request->quantity
+                'user_id' => Auth::id(),
+                'product_id' => $request->product_id,
+                'quantity' => $request->quantity
             ]);
         }
-        return redirect()->route('user.cart');
+        return redirect()->route('user.cart.index');
     }
 
 
     public function delete($id)
     {
-        Cart::where('product_id' , $id)
-        ->where('user_id' , Auth::id())->delete();
+        Cart::where('product_id', $id)
+            ->where('user_id', Auth::id())->delete();
 
         return redirect()->route('user.cart.index');
     }
@@ -59,34 +61,38 @@ class CartController extends Controller
 
     public function checkout()
     {
+        ////
+        $items = Cart::where('user_id', Auth::id())->get();
+        $products = CartService::getItemsInCart($items);
+
+        /////
         $user = User::findOrFail(Auth::id()); //ログインしているユーザー情報を取得
         $products = $user->products;
 
-        $lineItems=[];
-        foreach($products as $product){
+        $lineItems = [];
+        foreach ($products as $product) {
             $quantity = '';
             $quantity = Stock::where('product_id', $product->id)->sum('quantity');
 
 
-            if($product->pivot->quantity > $quantity)
+            if ($product->pivot->quantity > $quantity)
             //カート内の数量 > stockテーブルの数量
             {
-              //  return redirect()->route('user.cart.index');
-              //return redirect()->route('user.cart.index');
-              return view('user.cart.index',compact('product'));
-            }else{
-                $lineItem=[
+                //  return redirect()->route('user.cart.index');
+                //return redirect()->route('user.cart.index');
+                return view('user.cart.index', compact('product'));
+            } else {
+                $lineItem = [
                     'name' => $product->name,
                     'description' => $product->information,
                     'amount' => $product->price,
                     'currency' => 'jpy',
                     'quantity' => $product->pivot->quantity,
                 ];
-                array_push($lineItems,$lineItem);
+                array_push($lineItems, $lineItem);
             }
         }
-        foreach($products as $product)
-        {
+        foreach ($products as $product) {
             Stock::create([
                 //カートに入れた分商品を減らしておく
                 'product_id' => $product->id,
@@ -107,8 +113,7 @@ class CartController extends Controller
 
 
 
-        return view('user.checkout' , compact('session', 'publicKey'));
-
+        return view('user.checkout', compact('session', 'publicKey'));
     }
 
     public function success()
@@ -120,14 +125,13 @@ class CartController extends Controller
     public function cancel()
     {
         $user = User::findOrFail(Auth::id());
-        foreach($user->products as $product){
+        foreach ($user->products as $product) {
             Stock::create([
-                'product_id'=>$product->id,
-                'type'=>\Constant::PRODUCT_LIST['add'],
-                'quantity'=> $product->pivot->quantity
+                'product_id' => $product->id,
+                'type' => \Constant::PRODUCT_LIST['add'],
+                'quantity' => $product->pivot->quantity
             ]);
         }
         return redirect()->route('user.cart.index');
-
     }
 }

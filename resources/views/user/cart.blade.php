@@ -19,6 +19,9 @@
                                         <img src="">
                                     @endif
                                 </div>
+                                |cart
+
+
                                 <div class="md:w-4/12 ml-2">{{ $product->name }}</div>
                                 <div class="md:w-3/12 flex justify-around">
                                     <div>{{ $product->pivot->quantity }}個</div>
